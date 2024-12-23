@@ -79,7 +79,7 @@ export async function getOne(req, res, next) {
     try {
         let item = await genericGetOne({
             Table: EInvite,
-            condition: {_id: req.params._id},
+            condition: {invite_name: req.params._id},
             next,
         });
         if (item) item = item.toJSON();

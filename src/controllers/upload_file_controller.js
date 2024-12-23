@@ -268,7 +268,7 @@ export async function filterFiles(req, res, next) {
         let allowedmimetypes = ALLOWED_MIME_TYPES_UPLOAD;
         let allowedextensions = ALLOWED_EXT_UPLOAD;
 
-        if (res?.locals?.Role === "Admin") {
+        if (res?.locals?.Role !== "Admin") {
             allowedmimetypes = allowedmimetypes.concat(OTHER_MIME_TYPES_UPLOAD);
             allowedextensions = allowedextensions.concat(
                 OTHER_ALLOWED_EXT_UPLOAD,

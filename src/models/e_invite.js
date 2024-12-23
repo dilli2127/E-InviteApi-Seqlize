@@ -14,6 +14,10 @@ EInvite.init(
             type: DataTypes.STRING,
             allowNull: false,
         },
+         invite_url: {
+            type: DataTypes.STRING,
+            allowNull: false,
+        },
         mobile_number: {
             type: DataTypes.INTEGER,
             allowNull: false,
@@ -34,15 +38,19 @@ EInvite.init(
             allowNull: true,
         },
         longitude: {
-            type: DataTypes.INTEGER,
+            type: DataTypes.DOUBLE,
             allowNull: true,
         },
         latitude: {
-            type: DataTypes.INTEGER,
+            type: DataTypes.DOUBLE,
             allowNull: true,
         },
         image: {
             type: DataTypes.JSONB,
+            allowNull: true,
+        },
+        images: {
+            type: DataTypes.ARRAY(DataTypes.TEXT), 
             allowNull: true,
         },
         LastUpdated: {
@@ -86,8 +94,10 @@ export const einviteFields = [
     "EventAddress2",
     "Longitude",
     "Latitude",
+    "images",
     "Image",
     "LastUpdated",
+    "invite_url",
     "DeletedAt",
     "CreatedAt",
     "UpdatedAt",

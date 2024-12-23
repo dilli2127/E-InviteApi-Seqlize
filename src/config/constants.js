@@ -64,7 +64,7 @@ export const ALLOWED_MIME_TYPES_UPLOAD = [
 ];
 export const OTHER_MIME_TYPES_UPLOAD = ["image/jpeg", "image/png"];
 export const ALLOWED_EXT_UPLOAD = ["pdf", "doc", "docx"];
-export const OTHER_ALLOWED_EXT_UPLOAD = ["jpg", "jpeg", "png"];
+export const OTHER_ALLOWED_EXT_UPLOAD = ["jpg", "jpeg", "png","JPG", "JPEG", "PNG"];
 export const ALLOWED_DOMAINS = [
     /^(https:\/\/|http:\/\/)(www\.){0,1}localhost$/,
     /^(https:\/\/|http:\/\/)(www\.){0,1}tnpcb\.gov\.in$/,
