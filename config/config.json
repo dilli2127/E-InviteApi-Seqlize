@@ -1,0 +1,24 @@
+{
+    "development": {
+      "username": "freshfocuztech",
+      "password": "9677894094",
+      "database": "fresh_focuz_studio",
+      "host": "65.0.110.79",
+      "dialect": "postgres"
+    },
+    "test": {
+      "username": "root",
+      "password": "password",
+      "database": "database_test",
+      "host": "127.0.0.1",
+      "dialect": "mysql"
+    },
+    "production": {
+      "username": "root",
+      "password": "password",
+      "database": "database_production",
+      "host": "127.0.0.1",
+      "dialect": "mysql"
+    }
+  }
+  

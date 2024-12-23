@@ -1,0 +1,67 @@
+const fs = require("fs");
+const lodash = require("lodash");
+// eslint-disable-next-line import/no-extraneous-dependencies
+const inquirer = require("inquirer");
+
+const {CURR_DIR} = process.cwd();
+const QUESTIONS = [
+    {
+        name: "controller-names",
+        type: "input",
+        message: "Enter Controller names separated by commas:"
+    }
+];
+
+function capitalizeFirstLetter(input) {
+    return input[0].toUpperCase() + input.slice(1);
+}
+
+const generateCrud = async () => {
+    const CUR_DIR = __dirname;
+    const answers = await inquirer.prompt(QUESTIONS);
+    const input = answers["controller-names"];
+
+    const controllerNames = input.split(",");
+    controllerNames.forEach(controllerName => {
+        const camelCase = lodash.camelCase(controllerName);
+        const pascalCase = capitalizeFirstLetter(camelCase);
+        const lowerCaseName = controllerName.trim().toLowerCase();
+        const snakeCase = lodash.snakeCase(lowerCaseName)
+        const controllerFileName = `${snakeCase}_controller`;
+
+        const templatePath = `${CUR_DIR}`;
+        const controllerPath = `${templatePath}/controller`;
+        let controllerContents = fs.readFileSync(controllerPath, "utf8");
+        controllerContents = controllerContents
+            .replace(/##NAME##/g, pascalCase)
+            .replace(/##name##/g, lowerCaseName)
+            .replace(/##modelName##/g, snakeCase);
+        const controllerWritePath = `${CUR_DIR}/../../src/controllers/${controllerFileName}.js`;
+        fs.writeFileSync(controllerWritePath, controllerContents, "utf8");
+
+        const routerPath = `${templatePath}/router`;
+        let routerContents = fs.readFileSync(routerPath, "utf8");
+        routerContents = routerContents
+            .replace(/##NAME##/g, camelCase)
+            .replace(/##name##/g, lowerCaseName.replace(/ /g,""));
+            
+        const routerImportPath = `${templatePath}/router_import`;
+        let routerImportContents = fs.readFileSync(routerImportPath, "utf8");
+        routerImportContents = routerImportContents
+            .replace(/##name##/g, `${camelCase}Controller`)
+            .replace(/##controllerName##/g, `${controllerFileName}`);
+        const routerWritePath = `${CUR_DIR}/../../src/routes/router.js`;
+        let routerOldContents = fs.readFileSync(routerWritePath, "utf8");
+        routerOldContents = routerOldContents.replace(
+            /\/\/IMPORT/,
+            `${routerImportContents}\n//IMPORT`
+        );
+        routerOldContents = routerOldContents.replace(
+            /\/\/NEW_ROUTE/,
+            `${routerContents}\n//NEW_ROUTE`
+        );
+        fs.writeFileSync(routerWritePath, routerOldContents, "utf8");
+    });
+};
+
+generateCrud();

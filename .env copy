@@ -1,0 +1,5 @@
+DB_HOST=localhost
+DB_USER=postgres
+DB_PASS=12345
+DB_NAME=tnpcb-reports
+DB_DIALECT=postgres

@@ -1,0 +1,7 @@
+//##NAME##
+router.put("/##name##", ##NAME##Controller.create);
+router.post("/##name##", ##NAME##Controller.getAll);
+router.get("/##name##/:_id", ##NAME##Controller.getOne);
+router.get("/##name##", ##NAME##Controller.getAllWithoutPagination);
+router.patch("/##name##/:_id", ##NAME##Controller.update);
+router.delete("/##name##/:_id", ##NAME##Controller.remove);
