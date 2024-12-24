@@ -1,5 +1,8 @@
-# Use an official Node.js runtime as a parent image
-FROM node:18
+# Use an official Node.js 20 runtime as a parent image
+FROM node:20
+
+# Install dependencies required for bcrypt and other native modules
+RUN apt-get update && apt-get install -y build-essential python3
 
 # Set the working directory in the container
 WORKDIR /usr/src/app
@@ -9,9 +12,6 @@ COPY package*.json ./
 
 # Install dependencies
 RUN yarn install
-
-# If you are building your code for production
-# RUN npm ci --only=production
 
 # Copy the rest of the application code
 COPY . .

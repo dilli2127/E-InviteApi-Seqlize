@@ -4,7 +4,7 @@ import {executeRawQuery, genericGetOne} from "./generic_controller.js";
 import {genericResponse} from "./base_controllers.js";
 import {statusCodes, jwtExpirationTime} from "../config/constants.js";
 import {createJWT} from "./jwt_access_controller.js";
-import bcrypt from "bcrypt";
+// import bcrypt from "bcrypt";
 import {secretKey} from "../config/environment.js";
 
 const populateQuery = [
