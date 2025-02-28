@@ -1,8 +1,11 @@
-/* eslint-disable promise/prefer-await-to-callbacks */
 import fs from "fs/promises";
 import * as Minio from "minio";
 import logger from "./logger.js";
+import {Readable} from "stream";
 import sharp from "sharp";
+import path from "path"; // Ensure path module is imported
+import {fileURLToPath} from "url"; // For converting __dirname
+
 import {
     vultrAccessKey,
     vultrSecretKey,
@@ -10,6 +13,10 @@ import {
     vultrBucketName,
     vultrS3Endpoint,
 } from "../config/environment.js";
+
+// Get the directory name using fileURLToPath and import.meta.url
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Initialize Minio client (compatible with Vultr S3)
 const vultrClient = new Minio.Client({
@@ -40,9 +47,42 @@ const vultrClient = new Minio.Client({
 /**
  * Upload an image to Vultr S3 bucket
  * @param {string} key - Unique key for the image
- * @param {string} path - Local file path
+ * @param {string} filePath - Local file path
  * @returns {Promise<{Location: string}>} - URL of the uploaded image
  */
+export async function uploadImageCompressed(key, filePath) {
+    try {
+        // Compress the image using sharp and get the compressed image as a buffer
+        const compressedBuffer = await sharp(filePath)
+            .resize(1200) // Resize if needed (optional)
+            .jpeg({quality: 90}) // Set compression quality (optional)
+            .toBuffer();
+
+        const metaData = {}; // Add any custom metadata if needed
+
+        // Create a readable stream from the buffer
+        const bufferStream = Readable.from(compressedBuffer);
+
+        // Upload the compressed buffer to the Vultr S3 bucket using putObject
+        await vultrClient.putObject(
+            vultrBucketName,
+            key,
+            bufferStream,
+            metaData,
+        );
+
+        // Construct the URL to access the image (public access)
+        const url = constructUrl(key);
+
+        // Optionally, delete the original file if needed
+        // await fs.unlink(filePath);
+        return {Location: url};
+    } catch (err) {
+        logger("Error uploading image: ", err);
+        throw err;
+    }
+}
+
 export async function uploadImage(key, path) {
     try {
         const metaData = {}; // Add any custom metadata if needed

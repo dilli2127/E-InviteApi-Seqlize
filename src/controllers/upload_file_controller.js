@@ -14,7 +14,7 @@ import {
     OTHER_ALLOWED_EXT_UPLOAD,
 } from "../config/constants.js";
 import logger from "../utils/logger.js";
-import {uploadImage, deleteImage} from "../utils/vultr.js";
+import {uploadImage, deleteImage, uploadImageCompressed} from "../utils/vultr.js";
 import {getFileExtension} from "../utils/file_upload.js";
 import * as ENV from "../config/environment.js";
 
@@ -126,7 +126,7 @@ export async function uploadFiles(req, res, next) {
                             statusCode: statusCodes.INVALID_DATA,
                         });
                     const actualFileName = file.filename;
-                    const uploadedFile = await uploadImage(
+                    const uploadedFile = await uploadImageCompressed(
                         `${"files/"}${actualFileName}${fileExtension}`,
                         `${file.path}`,
                         next,
