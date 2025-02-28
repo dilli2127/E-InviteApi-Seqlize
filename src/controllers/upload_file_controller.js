@@ -14,7 +14,7 @@ import {
     OTHER_ALLOWED_EXT_UPLOAD,
 } from "../config/constants.js";
 import logger from "../utils/logger.js";
-import {uploadImage, deleteImage} from "../utils/minio.js";
+import {uploadImage, deleteImage} from "../utils/vultr.js";
 import {getFileExtension} from "../utils/file_upload.js";
 import * as ENV from "../config/environment.js";
 

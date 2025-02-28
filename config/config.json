@@ -3,7 +3,7 @@
       "username": "freshfocuztech",
       "password": "9677894094",
       "database": "fresh_focuz_studio",
-      "host": "65.0.110.79",
+      "host": "13.203.125.153",
       "dialect": "postgres"
     },
     "test": {

@@ -1,16 +1,16 @@
-import path from 'path';
-import fs from 'fs';
-import AWS from 'aws-sdk';
-import sharp from 'sharp';
-import poppler from 'pdf-poppler';
-import dotenv from 'dotenv';
-import { promisify } from 'util';
-import { genericResponse } from './base_controllers.js';
-import { statusCodes } from '../config/constants.js';
+import path from "path";
+import fs from "fs";
+import AWS from "aws-sdk";
+import sharp from "sharp";
+import poppler from "pdf-poppler";
+import dotenv from "dotenv";
+import {promisify} from "util";
+import {genericResponse} from "./base_controllers.js";
+import {statusCodes} from "../config/constants.js";
 
 dotenv.config();
 
-const uploadsFolder = path.join(process.cwd(), 'uploads');
+const uploadsFolder = path.join(process.cwd(), "uploads");
 
 // Ensure uploads folder exists
 if (!fs.existsSync(uploadsFolder)) {
@@ -32,17 +32,22 @@ const delay = promisify(setTimeout);
 async function safeDeleteFolder(folderPath) {
     try {
         if (fs.existsSync(folderPath)) {
-            fs.rmSync(folderPath, { recursive: true, force: true });
+            fs.rmSync(folderPath, {recursive: true, force: true});
         }
     } catch (err) {
-        console.warn(`Failed to delete folder: ${folderPath}. Retrying in 1 second.`);
+        console.warn(
+            `Failed to delete folder: ${folderPath}. Retrying in 1 second.`,
+        );
         await delay(1000);
         try {
             if (fs.existsSync(folderPath)) {
-                fs.rmSync(folderPath, { recursive: true, force: true });
+                fs.rmSync(folderPath, {recursive: true, force: true});
             }
         } catch (finalErr) {
-            console.error(`Final cleanup failed for folder: ${folderPath}`, finalErr.message);
+            console.error(
+                `Final cleanup failed for folder: ${folderPath}`,
+                finalErr.message,
+            );
         }
     }
 }
@@ -50,22 +55,24 @@ async function safeDeleteFolder(folderPath) {
 // Convert PDF to images using pdf-poppler
 async function convertPdfToImages(pdfPath, outputFolder) {
     const opts = {
-        format: 'jpeg',
+        format: "jpeg",
         out_dir: outputFolder,
-        out_prefix: 'page',
+        out_prefix: "page",
         // scale: 1000 // High-resolution images
     };
 
     await poppler.convert(pdfPath, opts);
 
-    const files = fs.readdirSync(outputFolder).filter(file => file.endsWith('.jpg'));
+    const files = fs
+        .readdirSync(outputFolder)
+        .filter(file => file.endsWith(".jpg"));
     return files.map(file => path.join(outputFolder, file));
 }
 
 // Upload image to Vultr S3
 async function uploadImageToVultr(localPath, albumName, pageIndex) {
     const imageBuffer = await sharp(localPath)
-        .png({ compressionLevel: 0 })  // No compression, max quality
+        .png({compressionLevel: 0}) // No compression, max quality
         .toBuffer();
 
     const uploadKey = `albums/${albumName}/page-${pageIndex + 1}.jpeg`;
@@ -74,8 +81,8 @@ async function uploadImageToVultr(localPath, albumName, pageIndex) {
         Bucket: process.env.VULTR_BUCKET_NAME,
         Key: uploadKey,
         Body: imageBuffer,
-        ContentType: 'image/png',   // Change to PNG
-        ACL: 'public-read',
+        ContentType: "image/png", // Change to PNG
+        ACL: "public-read",
     };
 
     await s3.upload(params).promise();
@@ -83,17 +90,15 @@ async function uploadImageToVultr(localPath, albumName, pageIndex) {
     return `${process.env.VULTR_S3_ENDPOINT}/${process.env.VULTR_BUCKET_NAME}/${uploadKey}`;
 }
 
-
-
 // Main album upload function
 export async function uploadAlbum(req, res, next) {
-    const { albumName } = req.body;
+    const {albumName} = req.body;
 
     if (!albumName) {
         return genericResponse({
             res,
             result: null,
-            exception: 'Album name is required',
+            exception: "Album name is required",
             pagination: null,
             statusCode: statusCodes.BAD_REQUEST,
         });
@@ -103,7 +108,7 @@ export async function uploadAlbum(req, res, next) {
         return genericResponse({
             res,
             result: null,
-            exception: 'PDF file is required',
+            exception: "PDF file is required",
             pagination: null,
             statusCode: statusCodes.BAD_REQUEST,
         });
@@ -113,7 +118,7 @@ export async function uploadAlbum(req, res, next) {
     const albumFolder = path.join(uploadsFolder, albumName);
 
     if (!fs.existsSync(albumFolder)) {
-        fs.mkdirSync(albumFolder, { recursive: true });
+        fs.mkdirSync(albumFolder, {recursive: true});
     }
 
     try {
@@ -121,36 +126,46 @@ export async function uploadAlbum(req, res, next) {
         const uploadedImages = [];
 
         for (let i = 0; i < imagePaths.length; i++) {
-            const imageUrl = await uploadImageToVultr(imagePaths[i], albumName, i);
+            const imageUrl = await uploadImageToVultr(
+                imagePaths[i],
+                albumName,
+                i,
+            );
             uploadedImages.push(imageUrl);
         }
 
         return genericResponse({
             res,
-            result: { message: 'Album uploaded successfully', images: uploadedImages },
+            result: {
+                message: "Album uploaded successfully",
+                images: uploadedImages,
+            },
             exception: null,
             pagination: null,
             statusCode: statusCodes.SUCCESS,
         });
-
     } catch (error) {
-        console.error('Upload Album Error:', error);
+        console.error("Upload Album Error:", error);
         return next(error);
-    }  finally {
+    } finally {
         // Add some delay to allow Windows to release locks
         await new Promise(resolve => setTimeout(resolve, 5000)); // 5 seconds delay
-    
+
         // Attempt cleanup
         await safeDeleteFolder(albumFolder);
-    
+
         if (fs.existsSync(pdfPath)) {
             try {
                 fs.unlinkSync(pdfPath);
             } catch (unlinkErr) {
-                console.error('Failed to delete PDF file:', pdfPath, unlinkErr.message);
+                console.error(
+                    "Failed to delete PDF file:",
+                    pdfPath,
+                    unlinkErr.message,
+                );
             }
         }
-    
+
         sharp.cache(false);
     }
 }

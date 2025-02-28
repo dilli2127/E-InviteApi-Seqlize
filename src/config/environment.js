@@ -70,4 +70,10 @@ export const minioAccessKey = process.env.MINIO_ACCESS_KEY_ID || 'default_minio_
 export const minioSecretKey = process.env.MINIO_SECRET_ACCESS_KEY || 'default_minio_secret_key';
 export const minioRegion = process.env.MINIO_REGION || 'default_minio_region';
 export const token = process.env.TOKEN ||   'default_token'
+export const vultrAccessKey = process.env.VULTR_ACCESS_KEY;
+export const vultrSecretKey = process.env.VULTR_SECRET_KEY;
+export const vultrRegion = process.env.VULTR_REGION; 
+export const vultrBucketName = process.env.VULTR_BUCKET_NAME;
+export const vultrS3Endpoint = process.env.VULTR_S3_ENDPOINT; 
+
  

@@ -41,6 +41,14 @@ export default function exportedRouter() {
     router.post("/urltobase64", uploadfilecontroller.urlToBase64);
 
     router.post("/upload-album", upload.single("file"), uploadAlbum);
-
+    router.post(
+        "/file-upload",
+        multer({
+            dest: "./Attachments/Files",
+            // eslint-disable-next-line promise/prefer-await-to-callbacks
+        }).any(),
+        uploadfilecontroller.filterFiles,
+        uploadfilecontroller.uploadFiles,
+    );
     return router;
 }
