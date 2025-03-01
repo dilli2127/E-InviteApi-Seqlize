@@ -1,5 +1,5 @@
 import lodash from "lodash";
-import {genericResponse} from "./base_controller";
+import {genericResponse} from "./base_controllers.js";
 import {
     genericCreate,
     genericGetAll,
@@ -7,12 +7,12 @@ import {
     genericGetOne,
     genericUpdate,
     genericDelete,
-} from "./generic_controller";
+} from "./generic_controller.js";
 
-import {statusCodes} from "../config/constants";
-import Images, {userFields} from "../models/images";
+import {statusCodes} from "../config/constants.js";
+import Images, {userFields} from "../models/images.js";
 
-import sortConditionBuilder from "../utils/sort_condition_builder";
+import sortConditionBuilder from "../utils/sort_condition_builder.js";
 
 export async function create(req, res, next) {
     try {

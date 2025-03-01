@@ -1,6 +1,7 @@
 import express from "express";
 import * as LoginAuth from "../controllers/login_auth.js";
 import * as eInviteController from "../controllers/e_invite_controllers.js";
+import * as cmsImageController from "../controllers/cms_image_controller.js";
 import multer from "multer";
 import * as uploadfilecontroller from "../controllers/upload_file_controller.js";
 import {uploadAlbum} from "../controllers/album_controller.js";
@@ -50,5 +51,12 @@ export default function exportedRouter() {
         uploadfilecontroller.filterFiles,
         uploadfilecontroller.uploadFiles,
     );
+     // cms image
+     router.put("/cms_image", cmsImageController.create);
+     router.post("/cms_image", cmsImageController.getAll);
+     router.get("/cms_image/:_id", cmsImageController.getOne);
+     router.get("/cms_image", cmsImageController.getAllWithoutPagination);
+     router.patch("/cms_image/:_id", cmsImageController.update);
+     router.delete("/cms_image/:_id", cmsImageController.remove);
     return router;
 }

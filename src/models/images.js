@@ -43,7 +43,7 @@ Images.init(
         paranoid: true, 
     },
 );
-export const imageFields = [
+export const userFields = [
     "_id",
     "url",
     "type",
