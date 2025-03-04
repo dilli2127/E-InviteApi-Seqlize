@@ -87,13 +87,13 @@ EInvite.init(
 );
 
 export const einviteFields = [
-    "InviteName",
-    "MobileNumber",
-    "Email",
-    "EventAddress1",
-    "EventAddress2",
-    "Longitude",
-    "Latitude",
+    "invite_name",
+    "mobile_number",
+    "email",
+    "event_address1",
+    "event_address2",
+    "longitude",
+    "latitude",
     "images",
     "Image",
     "LastUpdated",

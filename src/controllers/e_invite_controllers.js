@@ -10,7 +10,7 @@ import {
 } from "./generic_controller.js";
 import {statusCodes} from "../config/constants.js";
 import sortConditionBuilder from "../utils/sort_condition_builder.js";
-import EInvite from "../models/e_invite.js";
+import EInvite, { einviteFields } from "../models/e_invite.js";
 
 export async function create(req, res, next) {
     try {
