@@ -1,26 +1,41 @@
-# Use an official Node.js 20 runtime as a parent image
-FROM node:20
+# Stage 1 - Build Stage
+FROM node:20-alpine as builder
 
-# Install dependencies required for bcrypt and other native modules
-RUN apt-get update && apt-get install -y build-essential python3
-
-# Set the working directory in the container
+# Set working directory
 WORKDIR /usr/src/app
 
-# Copy package.json and package-lock.json files
+# Install dependencies for bcrypt or native modules
+RUN apk add --no-cache python3 make g++ 
+
+# Copy package.json and lock file to install dependencies
 COPY package*.json ./
 
-# Install dependencies
+# Install all dependencies (including dev for building if needed)
 RUN yarn install
 
-# Copy the rest of the application code
+# Copy application source code
 COPY . .
 
-# Expose the port the app runs on
+# Build if needed (like TypeScript projects)
+# RUN npm run build  # Uncomment if you have a build step
+
+# Stage 2 - Production Stage (Final image)
+FROM node:20-alpine
+
+# Set working directory
+WORKDIR /usr/src/app
+
+# Only copy needed files from builder stage
+COPY --from=builder /usr/src/app ./
+
+# Install only production dependencies
+RUN yarn install --production
+
+# Expose port
 EXPOSE 8246
 
-# Set environment variables if needed
+# Environment
 ENV NODE_ENV=production
 
-# Start the server
+# Start the app
 CMD ["npm", "start"]
