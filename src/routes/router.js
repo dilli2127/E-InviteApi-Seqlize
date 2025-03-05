@@ -27,20 +27,9 @@ export default function exportedRouter() {
     router.get("/e_invite", eInviteController.getAllWithoutPagination);
     router.patch("/e_invite/:_id", eInviteController.update);
     router.delete("/e_invite/:_id", eInviteController.remove);
-
-    //Upload File
-    router.post(
-        "/fileupload",
-        multer({
-            dest: "./Attachments/Files",
-            // eslint-disable-next-line promise/prefer-await-to-callbacks
-        }).any(),
-        uploadfilecontroller.filterFiles,
-        uploadfilecontroller.uploadFiles,
-    );
-    router.post("/urltobase64", uploadfilecontroller.urlToBase64);
-
+// album uploade pdf to jpge
     // router.post("/upload-album", upload.single("file"), uploadAlbum);
+    // file upload
     router.post(
         "/file-upload",
         multer({
@@ -50,12 +39,12 @@ export default function exportedRouter() {
         uploadfilecontroller.filterFiles,
         uploadfilecontroller.uploadFiles,
     );
-     // cms image
-     router.put("/cms_image", cmsImageController.create);
-     router.post("/cms_image", cmsImageController.getAll);
-     router.get("/cms_image/:_id", cmsImageController.getOne);
-     router.get("/cms_image", cmsImageController.getAllWithoutPagination);
-     router.patch("/cms_image/:_id", cmsImageController.update);
-     router.delete("/cms_image/:_id", cmsImageController.remove);
+    // cms image
+    router.put("/cms_image", cmsImageController.create);
+    router.post("/cms_image", cmsImageController.getAll);
+    router.get("/cms_image/:_id", cmsImageController.getOne);
+    router.get("/cms_image", cmsImageController.getAllWithoutPagination);
+    router.patch("/cms_image/:_id", cmsImageController.update);
+    router.delete("/cms_image/:_id", cmsImageController.remove);
     return router;
 }
