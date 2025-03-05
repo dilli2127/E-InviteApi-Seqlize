@@ -4,8 +4,7 @@ import * as eInviteController from "../controllers/e_invite_controllers.js";
 import * as cmsImageController from "../controllers/cms_image_controller.js";
 import multer from "multer";
 import * as uploadfilecontroller from "../controllers/upload_file_controller.js";
-import {uploadAlbum} from "../controllers/album_controller.js";
-import upload from "../config/upload.js";
+// import {uploadAlbum} from "../controllers/album_controller.js";
 export default function exportedRouter() {
     const options = {
         caseSensitive: true,
@@ -41,7 +40,7 @@ export default function exportedRouter() {
     );
     router.post("/urltobase64", uploadfilecontroller.urlToBase64);
 
-    router.post("/upload-album", upload.single("file"), uploadAlbum);
+    // router.post("/upload-album", upload.single("file"), uploadAlbum);
     router.post(
         "/file-upload",
         multer({
