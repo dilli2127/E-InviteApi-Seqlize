@@ -1,6 +1,6 @@
 import express from "express";
 import * as LoginAuth from "../controllers/login_auth.js";
-import * as UserRegister from "../controllers/user_controller.js";
+// import * as UserRegister from "../controllers/user_controller.js";
 import * as eInviteController from "../controllers/e_invite_controllers.js";
 import * as cmsImageController from "../controllers/cms_image_controller.js";
 import multer from "multer";
@@ -20,7 +20,7 @@ export default function exportedRouter() {
     });
 
     router.post("/login", LoginAuth.LoginAuth);
-    router.post("/register", UserRegister.RegisterUser);
+    // router.post("/register", UserRegister.RegisterUser);
 
     // EInvite
     router.put("/e_invite", eInviteController.create);
