@@ -5,7 +5,7 @@ import { sequelize } from "../config/db.js";
 export default class Users extends Model {}
 Users.init(
     {
-        id: {
+        _id: {
             type: DataTypes.UUID,
             defaultValue: DataTypes.UUIDV4,
             primaryKey: true,
@@ -18,15 +18,6 @@ Users.init(
         name: {
             type: DataTypes.STRING,
             allowNull: false,
-        },
-        password: {
-            type: DataTypes.STRING,
-            allowNull: false,
-        },
-        active: {
-            type: DataTypes.BOOLEAN,
-            allowNull: false,
-            defaultValue: true,
         },
         email: {
             type: DataTypes.STRING,
@@ -41,20 +32,38 @@ Users.init(
             allowNull: false,
             unique: true,
         },
-        createdAt: {
-            type: DataTypes.DATE,
-            defaultValue: NOW,
+        password: {
+            type: DataTypes.STRING,
             allowNull: false,
         },
-        updatedAt: {
-            type: DataTypes.DATE,
-            defaultValue: NOW,
+        clientcode: {
+            type: DataTypes.STRING,
+            allowNull: true,
+        },
+        usertype: {
+            type: DataTypes.ENUM("user", "admin"),
             allowNull: false,
+            defaultValue: "user",
+        },
+        active: {
+            type: DataTypes.BOOLEAN,
+            allowNull: false,
+            defaultValue: true,
         },
         deletedAt: {
             type: DataTypes.DATE,
             allowNull: true,
             defaultValue: null,
+        },
+        createdAt: {
+            type: DataTypes.DATE,
+            allowNull: false,
+            defaultValue: DataTypes.NOW,
+        },
+        updatedAt: {
+            type: DataTypes.DATE,
+            allowNull: false,
+            defaultValue: DataTypes.NOW,
         },
     },
     {
