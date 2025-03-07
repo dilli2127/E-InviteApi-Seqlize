@@ -1,6 +1,6 @@
 "use strict";
-import { DataTypes, Model, NOW } from "sequelize";
-import { sequelize } from "../config/db.js";
+import {DataTypes, Model, NOW} from "sequelize";
+import {sequelize} from "../config/db.js";
 
 export default class Users extends Model {}
 Users.init(
@@ -69,22 +69,22 @@ Users.init(
     {
         sequelize,
         paranoid: true,
-        modelName: "users",
+        modelName: "Users",
         defaultScope: {
             attributes: {
-                exclude: ["password", "createdAt", "updatedAt"],
+                exclude: [ "createdAt", "updatedAt"],
             },
         },
     },
 );
 
 export const userFields = [
-    "Username",
-    "Name",
-    "Email",
-    "Mobile",
-    "Active",
-    "DeletedAt",
-    "CreatedAt",
-    "UpdatedAt",
+    "username",
+    "name",
+    "email",
+    "mobile",
+    "password",
+    "clientcode",
+    "usertype",
+    "active",
 ];
