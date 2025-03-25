@@ -5,6 +5,8 @@ import * as eInviteController from "../controllers/e_invite_controllers.js";
 import * as cmsImageController from "../controllers/cms_image_controller.js";
 import multer from "multer";
 import * as uploadfilecontroller from "../controllers/upload_file_controller.js";
+import { uploadEventPhoto } from "../controllers/uploadControlleraws.js";
+import { uploadSelfie } from "../controllers/rekognitionController.js";
 // import {uploadAlbum} from "../controllers/album_controller.js";
 export default function exportedRouter() {
     const options = {
@@ -48,5 +50,25 @@ export default function exportedRouter() {
     router.get("/cms_image", cmsImageController.getAllWithoutPagination);
     router.patch("/cms_image/:_id", cmsImageController.update);
     router.delete("/cms_image/:_id", cmsImageController.remove);
+
+    router.post(
+        "/upload-selfie",
+        multer({
+            dest: "./Attachments/Files",
+            // eslint-disable-next-line promise/prefer-await-to-callbacks
+        }).any(),
+        uploadfilecontroller.filterFiles,
+        uploadSelfie,
+    );
+    router.post(
+        "/upload-photo",
+        multer({
+            dest: "./Attachments/Files",
+            // eslint-disable-next-line promise/prefer-await-to-callbacks
+        }).any(),
+        uploadfilecontroller.filterFiles,
+        uploadfilecontroller.uploadFilesaws,
+    );
+
     return router;
 }
