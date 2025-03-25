@@ -75,5 +75,10 @@ export const vultrSecretKey = process.env.VULTR_SECRET_KEY;
 export const vultrRegion = process.env.VULTR_REGION; 
 export const vultrBucketName = process.env.VULTR_BUCKET_NAME;
 export const vultrS3Endpoint = process.env.VULTR_S3_ENDPOINT; 
+export const awsAccessKey = process.env.AWS_ACCESS_KEY_ID;
+export const awsSecretKey = process.env.AWS_SECRET_ACCESS_KEY;
+export const awsRegion = process.env.AWS_REGION;
+export const awsBucketName = process.env.AWS_BUCKET_NAME;
+export const awsEndpoint = process.env.AWS_S3_ENDPOINT;
 
  

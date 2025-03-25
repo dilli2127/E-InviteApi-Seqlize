@@ -1,9 +1,9 @@
 import fs from "fs/promises";
 import { S3Client, PutObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";
-import { Readable } from "stream";
 import sharp from "sharp";
 import path from "path";
 import { fileURLToPath } from "url";
+import mime from "mime-types"; // Import MIME type detector
 import logger from "./logger.js";
 import {
     awsAccessKey,
@@ -16,11 +16,11 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Initialize AWS S3 client
-const s3Client = new S3Client({
-    region: awsRegion,
+const s3 = new S3Client({
+    region: awsRegion, 
     credentials: {
-        accessKeyId: awsAccessKey,
-        secretAccessKey: awsSecretKey,
+      accessKeyId: awsAccessKey,
+      secretAccessKey: awsSecretKey,
     },
 });
 
@@ -32,26 +32,36 @@ const s3Client = new S3Client({
  */
 export async function AwsuploadImageCompressed(key, filePath) {
     try {
+        let fileStat;
+        try {
+            fileStat = await fs.stat(filePath);
+        } catch (error) {
+            throw new Error(`File not found: ${filePath}`);
+        }
+
+        if (!fileStat.isFile()) {
+            throw new Error(`Invalid file path: ${filePath}`);
+        }
+
         // Compress the image using sharp
         const compressedBuffer = await sharp(filePath)
             .resize(1200)
             .jpeg({ quality: 90 })
             .toBuffer();
 
-        // Create a readable stream from the buffer
-        const bufferStream = Readable.from(compressedBuffer);
+        if (!compressedBuffer || compressedBuffer.length === 0) {
+            throw new Error("Error: Compressed buffer is empty!");
+        }
 
         // Upload the image to S3
-        await s3Client.send(new PutObjectCommand({
+        await s3.send(new PutObjectCommand({
             Bucket: awsBucketName,
             Key: key,
-            Body: bufferStream,
+            Body: compressedBuffer,
             ContentType: "image/jpeg",
         }));
 
-        // Construct the S3 URL
-        const url = constructUrl(key);
-        return { Location: url };
+        return { Location: constructUrl(key) };
     } catch (err) {
         logger("Error uploading image: ", err);
         throw err;
@@ -67,15 +77,17 @@ export async function AwsuploadImageCompressed(key, filePath) {
 export async function uploadImage(key, filePath) {
     try {
         const fileData = await fs.readFile(filePath);
+        const contentType = mime.lookup(filePath) || "application/octet-stream";
 
         // Upload file to S3
-        await s3Client.send(new PutObjectCommand({
+        await s3.send(new PutObjectCommand({
             Bucket: awsBucketName,
             Key: key,
             Body: fileData,
+            ContentType: contentType,
         }));
 
-        // Delete local file after upload
+        // Delete local file after successful upload
         await fs.unlink(filePath);
 
         const url = constructUrl(key);
@@ -93,7 +105,7 @@ export async function uploadImage(key, filePath) {
  */
 export async function deleteImage(key) {
     try {
-        await s3Client.send(new DeleteObjectCommand({
+        await s3.send(new DeleteObjectCommand({
             Bucket: awsBucketName,
             Key: key,
         }));

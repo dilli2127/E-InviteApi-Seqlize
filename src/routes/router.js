@@ -5,7 +5,6 @@ import * as eInviteController from "../controllers/e_invite_controllers.js";
 import * as cmsImageController from "../controllers/cms_image_controller.js";
 import multer from "multer";
 import * as uploadfilecontroller from "../controllers/upload_file_controller.js";
-import { uploadEventPhoto } from "../controllers/uploadControlleraws.js";
 import { uploadSelfie } from "../controllers/rekognitionController.js";
 // import {uploadAlbum} from "../controllers/album_controller.js";
 export default function exportedRouter() {
