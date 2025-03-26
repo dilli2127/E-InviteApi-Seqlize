@@ -5,7 +5,7 @@ import * as eInviteController from "../controllers/e_invite_controllers.js";
 import * as cmsImageController from "../controllers/cms_image_controller.js";
 import multer from "multer";
 import * as uploadfilecontroller from "../controllers/upload_file_controller.js";
-import { uploadSelfie } from "../controllers/rekognitionController.js";
+import { findMatchingPhotos } from "../controllers/rekognitionController.js";
 // import {uploadAlbum} from "../controllers/album_controller.js";
 export default function exportedRouter() {
     const options = {
@@ -57,7 +57,7 @@ export default function exportedRouter() {
             // eslint-disable-next-line promise/prefer-await-to-callbacks
         }).any(),
         uploadfilecontroller.filterFiles,
-        uploadSelfie,
+        findMatchingPhotos,
     );
     router.post(
         "/upload-photo",
