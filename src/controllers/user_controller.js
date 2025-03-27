@@ -17,7 +17,7 @@ export async function RegisterUser(req, res, next) {
     try {
         const {username, name, email, mobile, password, clientcode} = req.body;
         const usertype = "user";
-        if (!username || !name || !email || !mobile || !password) {
+        if (!name || !email || !mobile || !password) {
             return res.status(400).json({message: "All fields are required."});
         }
 

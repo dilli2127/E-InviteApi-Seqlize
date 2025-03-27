@@ -10,11 +10,6 @@ Users.init(
             defaultValue: DataTypes.UUIDV4,
             primaryKey: true,
         },
-        username: {
-            type: DataTypes.STRING,
-            allowNull: false,
-            unique: true,
-        },
         name: {
             type: DataTypes.STRING,
             allowNull: false,
@@ -79,7 +74,6 @@ Users.init(
 );
 
 export const userFields = [
-    "username",
     "name",
     "email",
     "mobile",

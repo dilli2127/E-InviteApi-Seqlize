@@ -20,7 +20,7 @@ export default function exportedRouter() {
     });
 
     router.post("/login", LoginAuth.LoginAuth);
-    router.post("/register", UserRegister.RegisterUser);
+    router.post("/signup", UserRegister.RegisterUser);
 
     // EInvite
     router.put("/e_invite", eInviteController.create);

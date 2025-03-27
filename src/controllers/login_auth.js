@@ -9,9 +9,9 @@ import {secretKey} from "../config/environment.js";
 
 export async function LoginAuth(req, res, next) {
     const {username, password} = req.body;
-
+    const email = username;
     try {
-        if (!username || !password) {
+        if (!email || !password) {
             return res
                 .status(400)
                 .json({message: "Username and password are required."});
@@ -19,7 +19,7 @@ export async function LoginAuth(req, res, next) {
 
         const user = await genericGetOne({
             Table: Users,
-            condition: {username},
+            condition: {email},
             next,
         });
 
