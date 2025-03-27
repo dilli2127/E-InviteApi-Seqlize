@@ -2,30 +2,21 @@
 
 module.exports = {
     up: async (queryInterface, Sequelize) => {
-        await queryInterface.createTable("gallery", {
+        await queryInterface.createTable("gallery_category_table", {
             _id: {
                 type: Sequelize.UUID,
                 defaultValue: Sequelize.UUIDV4,
                 primaryKey: true,
             },
-            galleryname: {
+            name: {
                 type: Sequelize.STRING,
                 allowNull: false,
-              },
-              gallerycategory: {
-                type: Sequelize.UUID,
-                allowNull: false,
-                references: {
-                  model: 'gallery_category_table',
-                  key: '_id',
-                },
-                onUpdate: 'CASCADE',
-                onDelete: 'CASCADE',
-              },
-              gallerycover: {
+            },
+            description: {
                 type: Sequelize.STRING,
-                allowNull: true,
-              },
+                allowNull: false,
+            },
+
             deletedAt: {
                 type: Sequelize.DATE,
                 defaultValue: null,
@@ -45,6 +36,6 @@ module.exports = {
     },
 
     down: async (queryInterface, Sequelize) => {
-        await queryInterface.dropTable("gallery");
+        await queryInterface.dropTable("gallery_category_table");
     },
 };

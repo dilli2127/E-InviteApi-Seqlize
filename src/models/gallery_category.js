@@ -1,34 +1,24 @@
 "use strict";
-import {DataTypes, Model, NOW, Sequelize} from "sequelize";
+import {DataTypes, Model, NOW} from "sequelize";
 import {sequelize} from "../config/db.js";
 
-export default class Gallery extends Model {}
+export default class GalleryCategory extends Model {}
 
-Gallery.init(
+GalleryCategory.init(
     {
         _id: {
             type: DataTypes.UUID,
             defaultValue: DataTypes.UUIDV4,
             primaryKey: true,
         },
-        galleryname: {
+        name: {
             type: DataTypes.STRING,
             allowNull: false,
         },
-        gallerycover: {
+        description: {
             type: DataTypes.STRING,
-            allowNull: true,
-        },
-        gallerycategory: {
-            type: Sequelize.UUID,
             allowNull: false,
-            references: {
-              model: 'gallery_category_table',
-              key: '_id',
-            },
-            onUpdate: 'CASCADE',
-            onDelete: 'CASCADE',
-          },
+        },
         createdAt: {
             type: DataTypes.DATE,
             defaultValue: NOW,
@@ -48,17 +38,16 @@ Gallery.init(
     {
         sequelize,
         paranoid: true,
-        modelName: "gallery",
+        modelName: "gallery_category_table",
         defaultScope: {
             attributes: {
-                exclude: ["createdAt", "updatedAt","deletedAt"],
+                exclude: ["createdAt", "updatedAt"],
             },
         },
     },
 );
 
-export const galleryFields = [
-    "galleryname",
-    "gallerycategory",
-    "gallerycover",
+export const galleryCategoryFields = [
+    "name",
+    "description",
 ];

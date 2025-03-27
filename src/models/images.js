@@ -1,5 +1,5 @@
 "use strict";
-import {DataTypes, Model, NOW} from "sequelize";
+import {DataTypes, Model, NOW, Sequelize} from "sequelize";
 import {sequelize} from "../config/db.js"; 
 
 export default class Images extends Model {}
@@ -18,6 +18,16 @@ Images.init(
         type: {
             type: DataTypes.STRING,
             allowNull: false,
+        },
+        gallery_category: {
+            type: Sequelize.UUID,
+            allowNull: true,
+            references: {
+                model: "gallery_category_table",
+                key: "_id",
+            },
+            onUpdate: "CASCADE",
+            onDelete: "SET NULL",
         },
         deletedAt: {
             type: DataTypes.DATE,
@@ -41,13 +51,15 @@ Images.init(
         tableName: "images",
         timestamps: true,
         paranoid: true, 
+        defaultScope: {
+            attributes: {
+                exclude: ["createdAt", "updatedAt","deletedAt"],
+            },
+        },
     },
 );
 export const userFields = [
-    "_id",
     "url",
     "type",
-    "deletedAt",
-    "createdAt",
-    "updatedAt",
+    "gallery_category",
 ];
