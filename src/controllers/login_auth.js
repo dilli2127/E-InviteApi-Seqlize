@@ -54,10 +54,12 @@ export async function LoginAuth(req, res, next) {
         });
 
         if (token) await createJWT(token, jwtExpirationTime.seconds, user._id);
-
+        const userresult = user.toJSON();
+        delete userresult.password;
+        delete userresult._id;
         return genericResponse({
             res,
-            result: {token, UserItem: user},
+            result: {token, UserItem: userresult},
             exception: null,
             pagination: null,
             statusCode: statusCodes.SUCCESS,

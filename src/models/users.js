@@ -67,7 +67,7 @@ Users.init(
         modelName: "Users",
         defaultScope: {
             attributes: {
-                exclude: [ "createdAt", "updatedAt"],
+                exclude: [ "createdAt", "updatedAt","deletedAt"],
             },
         },
     },
