@@ -2,21 +2,21 @@
 
 module.exports = {
     up: async (queryInterface, Sequelize) => {
-        await queryInterface.createTable("e_album", {
+        await queryInterface.createTable("e_gallery", {
             _id: {
                 type: Sequelize.UUID,
                 defaultValue: Sequelize.UUIDV4,
                 primaryKey: true,
             },
-            albumname: {
+            name: {
                 type: Sequelize.STRING,
                 allowNull: false,
-              },
-              albumurl: {
+            },
+            drive_folder_id: {
                 type: Sequelize.STRING,
                 allowNull: false,
-              },
-              userid: {
+            },
+            userid: {
                 type: Sequelize.UUID,
                 allowNull: false,
                 references: {
@@ -26,13 +26,9 @@ module.exports = {
                 onUpdate: 'CASCADE',
                 onDelete: 'CASCADE',
               },
-              albumcover: {
+            album_cover: {
                 type: Sequelize.STRING,
                 allowNull: true,
-              },
-            LastUpdated: {
-                type: Sequelize.BIGINT,
-                defaultValue: null,
             },
             deletedAt: {
                 type: Sequelize.DATE,
@@ -53,6 +49,6 @@ module.exports = {
     },
 
     down: async (queryInterface, Sequelize) => {
-        await queryInterface.dropTable("e_album");
+        await queryInterface.dropTable("e_gallery");
     },
 };

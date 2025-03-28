@@ -1,10 +1,11 @@
 "use strict";
 import { DataTypes, Model, NOW } from "sequelize";
 import { sequelize } from "../config/db.js";
+import Users from "./users.js";
 
-export default class Album extends Model {}
+export default class EAlbum extends Model {}
 
-Album.init(
+EAlbum.init(
     {
         _id: {
             type: DataTypes.UUID,
@@ -50,21 +51,22 @@ Album.init(
     {
         sequelize,
         paranoid: true,
-        modelName: "album",
+        modelName: "e_album",
         defaultScope: {
             attributes: {
-                exclude: ["createdAt", "updatedAt"],
+                exclude: ["createdAt", "updatedAt","deletedAt"],
             },
         },
     }
 );
-
-export const albumFields = [
+EAlbum.hasOne(Users, {
+    as: "UserItem",
+    sourceKey: "userid",
+    foreignKey: "_id",
+});
+export const eAlbumFields = [
     "albumname",
     "albumurl",
     "userid",
     "albumcover",
-    "DeletedAt",
-    "CreatedAt",
-    "UpdatedAt",
 ];

@@ -1,38 +1,37 @@
 "use strict";
 import {DataTypes, Model, NOW, Sequelize} from "sequelize";
-import {sequelize} from "../config/db.js"; 
-import GalleryCategory from "./gallery_category.js";
+import {sequelize} from "../config/db.js";
+import Users from "./users.js";
 
-export default class Images extends Model {}
+export default class EGallery extends Model {}
 
-Images.init(
+EGallery.init(
     {
         _id: {
             type: DataTypes.UUID,
             defaultValue: DataTypes.UUIDV4,
             primaryKey: true,
         },
-        url: {
+        name: {
             type: DataTypes.STRING,
             allowNull: false,
         },
-        type: {
-            type: DataTypes.STRING,
+        drive_folder_id: {
+            type: Sequelize.STRING,
             allowNull: false,
         },
-        gallery_category: {
+        userid: {
             type: Sequelize.UUID,
-            allowNull: true,
+            allowNull: false,
             references: {
-                model: "gallery_category_table",
-                key: "_id",
+              model: 'Users',
+              key: '_id',
             },
-            onUpdate: "CASCADE",
-            onDelete: "SET NULL",
-        },
-        deletedAt: {
-            type: DataTypes.DATE,
-            defaultValue: null,
+            onUpdate: 'CASCADE',
+            onDelete: 'CASCADE',
+          },
+        album_cover: {
+            type: Sequelize.STRING,
             allowNull: true,
         },
         createdAt: {
@@ -45,13 +44,16 @@ Images.init(
             defaultValue: NOW,
             allowNull: false,
         },
+        deletedAt: {
+            type: DataTypes.DATE,
+            allowNull: true,
+            defaultValue: null,
+        },
     },
     {
         sequelize,
-        modelName: "Images",
-        tableName: "images",
-        timestamps: true,
-        paranoid: true, 
+        paranoid: true,
+        modelName: "e_gallery",
         defaultScope: {
             attributes: {
                 exclude: ["createdAt", "updatedAt","deletedAt"],
@@ -59,13 +61,15 @@ Images.init(
         },
     },
 );
-Images.hasOne(GalleryCategory, {
-    as: "GalleryCategoryItem",
-    sourceKey: "gallery_category",
+EGallery.hasOne(Users, {
+    as: "UserItem",
+    sourceKey: "userid",
     foreignKey: "_id",
 });
-export const userFields = [
-    "url",
-    "type",
-    "gallery_category",
+
+export const egalleryFields = [
+    "name",
+    "drive_folder_id",
+    "userid",
+    "album_cover",
 ];

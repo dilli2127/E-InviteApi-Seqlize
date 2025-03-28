@@ -8,18 +8,19 @@ import {
     genericUpdate,
     genericDelete,
 } from "./generic_controller.js";
-
 import {statusCodes} from "../config/constants.js";
-import Images, {userFields} from "../models/images.js";
-
 import sortConditionBuilder from "../utils/sort_condition_builder.js";
-import {Op} from "sequelize";
-
-const populateQueryGalleryCategory = ["GalleryCategoryItem"];
+import EGallery, { egalleryFields } from "../models/e_gallery.js";
+const PopulatequeryUsers = ["UserItem"]
 export async function create(req, res, next) {
     try {
         const json = req.body;
-        const item = await genericCreate({Table: Images, json, next});
+        const item = await genericCreate({
+            Table: EGallery,
+            json,
+            fieldsToInclude: egalleryFields,
+            next,
+        });
         return genericResponse({
             res,
             result: item || null,
@@ -36,7 +37,7 @@ export async function update(req, res, next) {
     try {
         const json = req.body;
         const item = await genericUpdate({
-            Table: Images,
+            Table: EGallery,
             condition: {_id: req.params._id},
             json,
             canUpsert: false,
@@ -57,7 +58,7 @@ export async function update(req, res, next) {
 export async function remove(req, res, next) {
     try {
         await genericDelete({
-            Table: Images,
+            Table: EGallery,
             condition: {_id: req.params._id},
             next,
             softDelete: false,
@@ -77,8 +78,8 @@ export async function remove(req, res, next) {
 export async function getOne(req, res, next) {
     try {
         let item = await genericGetOne({
-            Table: Images,
-            condition: {_id: req.params._id},
+            Table: EGallery,
+            condition: {invite_name: req.params._id},
             next,
         });
         if (item) item = item.toJSON();
@@ -105,11 +106,11 @@ export async function getAll(req, res, next) {
         );
         let condition = {};
         const getResult = await genericGetAll({
-            Table: Images,
+            Table: EGallery,
             condition,
             sortConditions,
             next,
-            populateQuery: populateQueryGalleryCategory,
+            populateQuery: PopulatequeryUsers,
             pageNumber: json.pageNumber,
             pageLimit: json.pageLimit,
         });
@@ -136,7 +137,7 @@ export async function getAllWithoutPagination(req, res, next) {
         const condition = {};
 
         let getResult = await genericGetAllWithoutPagination({
-            Table: Images,
+            Table: EGallery,
             condition,
             sortConditions,
             next,
@@ -151,39 +152,6 @@ export async function getAllWithoutPagination(req, res, next) {
             result: getResult,
             exception: null,
             pagination: null,
-            statusCode: statusCodes.SUCCESS,
-        });
-    } catch (error) {
-        return next(error);
-    }
-}
-
-export async function getAllGalleryImages(req, res, next) {
-    try {
-        const json = req.body;
-        const defaultSortConditions = [["_id", "DESC"]];
-        const sortConditions = lodash.defaults(
-            sortConditionBuilder(json.sortCondition),
-            defaultSortConditions,
-        );
-        const getResult = await genericGetAll({
-            Table: Images,
-            condition: {gallery_category: {[Op.ne]: null}},
-            sortConditions,
-            next,
-            populateQuery: populateQueryGalleryCategory,
-            pageNumber: json.pageNumber,
-            pageLimit: json.pageLimit,
-        });
-        let {items} = getResult;
-        const {pagination} = getResult;
-
-        if (items) items = items.map(x => x.toJSON());
-        return genericResponse({
-            res,
-            result: items,
-            exception: null,
-            pagination,
             statusCode: statusCodes.SUCCESS,
         });
     } catch (error) {

@@ -4,6 +4,9 @@ import * as UserRegister from "../controllers/user_controller.js";
 import * as eInviteController from "../controllers/e_invite_controllers.js";
 import * as galleryCategoryController from "../controllers/gallery_category_controller.js";
 import * as galleryController from "../controllers/gallery_controller.js";
+import * as egalleryController from "../controllers/e_gallery_controller.js";
+import * as ealbumController from "../controllers/e_album_controller.js";
+import * as userController from "../controllers/user_controller.js";
 import * as cmsImageController from "../controllers/cms_image_controller.js";
 import multer from "multer";
 import * as uploadfilecontroller from "../controllers/upload_file_controller.js";
@@ -45,6 +48,27 @@ export default function exportedRouter() {
       router.get("/gallery", galleryController.getAllWithoutPagination);
       router.patch("/gallery/:_id", galleryController.update);
       router.delete("/gallery/:_id", galleryController.remove);
+       // gallery
+       router.put("/e_gallery", egalleryController.create);
+       router.post("/e_gallery", egalleryController.getAll);
+       router.get("/e_gallery/:_id", egalleryController.getOne);
+       router.get("/e_gallery", egalleryController.getAllWithoutPagination);
+       router.patch("/e_gallery/:_id", egalleryController.update);
+       router.delete("/e_gallery/:_id", egalleryController.remove);
+         // ealbum
+         router.put("/e_album", ealbumController.create);
+         router.post("/e_album", ealbumController.getAll);
+         router.get("/e_album/:_id", ealbumController.getOne);
+         router.get("/e_album", ealbumController.getAllWithoutPagination);
+         router.patch("/e_album/:_id", ealbumController.update);
+         router.delete("/e_album/:_id", ealbumController.remove);
+        // user
+        router.put("/user", userController.RegisterUser);
+        router.post("/user", userController.getAll);
+        router.get("/user/:_id", userController.getOne);
+        router.get("/user", userController.getAllWithoutPagination);
+        router.patch("/user/:_id", userController.update);
+        router.delete("/user/:_id", userController.remove);
 // album uploade pdf to jpge
     // router.post("/upload-album", upload.single("file"), uploadAlbum);
     // file upload
