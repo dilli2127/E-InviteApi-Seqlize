@@ -18,6 +18,7 @@ import {genericResponse, getUtcUnix} from "../controllers/base_controllers.js";
 import JWTAccess from "../models/jwt_access.js";
 // import OlgprsUsers from "../models/olgprs_users.js";
 import {genericGetOne} from "../controllers/generic_controller.js";
+import Users from "../models/users.js";
 
 export const getCurrentUser = async token => {
     if (!token) return {user: null};
@@ -44,7 +45,7 @@ export const getCurrentUser = async token => {
     }
 };
 
-export async function officerResolver(req, res, next) {
+export async function userResolver(req, res, next) {
     if (!res.locals.skipResponse) {
         let invalidreq = await validaterequest(req.body);
         if (invalidreq)
@@ -63,23 +64,20 @@ export async function officerResolver(req, res, next) {
     if (user) {
         const opts = {
             attributes: {
-                include: ["name", "passwordtext"],
+                include: ["name"],
             },
         };
 
-        // const item = await genericGetOne({
-        //     Table: OlgprsUsers,
-        //     condition: {_id: user.userId},
-        //     opts,
-        // });
+        const item = await genericGetOne({
+            Table: Users,
+            condition: {_id: user.userId},
+            opts,
+        });
 
         if (item) {
             updateJWTLastUsed(token);
             res.locals.UserID = item._id;
-            res.locals.DeeOfficeId = item.deeoffice_id;
-            res.locals.ZoneId = item.zone_id;
-            res.locals.SquadId = item.squad_id;
-            
+            res.locals.usertype = item.usertype;            
             next();
             return true;
         }
@@ -103,7 +101,60 @@ export async function officerResolver(req, res, next) {
             statusCode: statusCodes.NOT_AUTHORIZED,
         });
 }
+export async function adminResolver(req, res, next) {
+    if (!res.locals.skipResponse) {
+        let invalidreq = await validaterequest(req.body);
+        if (invalidreq)
+            return genericResponse({
+                res,
+                result: null,
+                exception: "Invalid Data",
+                pagination: null,
+                statusCode: statusCodes.INVALID_DATA,
+            });
+    }
+    const usertype = "admin";
+    const {token} = req.headers;
+    const {user, iat} = await getCurrentUser(token);
 
+    if (user) {
+        const opts = {
+            attributes: {include: ["PasswordValidFrom", "MobileNumber"]},
+        };
+
+        const item = await genericGetOne({
+            Table: Users,
+            condition: {_id: user._id},
+            opts,
+        });
+        if (item) {
+            updateJWTLastUsed(token);
+            res.locals.UserID = item._id;
+            res.locals.usertype = item.usertype;  
+            next();
+            return true;
+        }
+        if (!item) {
+            if (!res.locals.skipResponse)
+                return genericResponse({
+                    res,
+                    result: null,
+                    exception: "Token expired",
+                    pagination: null,
+                    stringResult: "Token expired",
+                    statusCode: statusCodes.NOT_AUTHORIZED,
+                });
+        }
+    }
+    if (!res.locals.skipResponse)
+        return genericResponse({
+            res,
+            result: null,
+            exception: null,
+            pagination: null,
+            statusCode: statusCodes.NOT_AUTHORIZED,
+        });
+}
 export function multiAuth(middlewares) {
     return async function (req, res, next) {
         let invalidreq = await validaterequest(req.body);
@@ -148,13 +199,7 @@ export function checkAllAuth() {
         let middleResponse = false;
         let middlewares = [
             adminResolver,
-            officerResolver,
-            advocateResolver,
             userResolver,
-            ngtadminResolver,
-            ngtdepartmentResolver,
-            ngtcsResolver,
-            ngtpcstResolver,
         ];
         for (let index = 0; index < middlewares.length; index++) {
             const auth = middlewares[index];
@@ -219,14 +264,6 @@ export async function logout(req, res) {
                 LogOutOn: getUtcUnix(),
             };
             logJson[`${user?.UserPath}`] = user._id;
-            if (
-                res.locals.Role === "NGTAdmin" ||
-                res.locals.Role === "NGTCS" ||
-                res.locals.Role === "NGTPCST" ||
-                res.locals.Role === "NGTDepartment"
-            ) {
-                logJson.IsNGT = true;
-            } else logJson.IsNGT = false;
             // createLoginLog(logJson);
             return genericResponse({
                 res,
@@ -245,7 +282,6 @@ export async function logout(req, res) {
         LogOutOn: getUtcUnix(),
     };
     logJson[`${user?.UserPath}`] = user?._id;
-    // createLoginLog(logJson);
 
     return genericResponse({
         res,

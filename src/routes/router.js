@@ -10,6 +10,7 @@ import * as userController from "../controllers/user_controller.js";
 import * as cmsImageController from "../controllers/cms_image_controller.js";
 import multer from "multer";
 import * as uploadfilecontroller from "../controllers/upload_file_controller.js";
+import { userResolver } from "../config/auth.js";
 // import {uploadAlbum} from "../controllers/album_controller.js";
 export default function exportedRouter() {
     const options = {
@@ -50,7 +51,7 @@ export default function exportedRouter() {
       router.delete("/gallery/:_id", galleryController.remove);
        // gallery
        router.put("/e_gallery", egalleryController.create);
-       router.post("/e_gallery", egalleryController.getAll);
+       router.post("/e_gallery", userResolver,egalleryController.getAll);
        router.get("/e_gallery/:_id", egalleryController.getOne);
        router.get("/e_gallery", egalleryController.getAllWithoutPagination);
        router.patch("/e_gallery/:_id", egalleryController.update);
