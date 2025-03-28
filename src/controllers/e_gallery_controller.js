@@ -10,8 +10,8 @@ import {
 } from "./generic_controller.js";
 import {statusCodes} from "../config/constants.js";
 import sortConditionBuilder from "../utils/sort_condition_builder.js";
-import EGallery, { egalleryFields } from "../models/e_gallery.js";
-const PopulatequeryUsers = ["UserItem"]
+import EGallery, {egalleryFields} from "../models/e_gallery.js";
+const PopulatequeryUsers = ["UserItem"];
 export async function create(req, res, next) {
     try {
         const json = req.body;
@@ -105,6 +105,9 @@ export async function getAll(req, res, next) {
             defaultSortConditions,
         );
         let condition = {};
+        if (res?.locals?.UserID) {
+            condition["userid"] = res?.locals?.UserID;
+        }
         const getResult = await genericGetAll({
             Table: EGallery,
             condition,
