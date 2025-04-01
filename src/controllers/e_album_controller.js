@@ -105,6 +105,9 @@ export async function getAll(req, res, next) {
             defaultSortConditions,
         );
         let condition = {};
+        if (res?.locals?.UserID) {
+            condition["userid"] = res?.locals?.UserID;
+        }
         const getResult = await genericGetAll({
             Table: EAlbum,
             condition,

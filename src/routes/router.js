@@ -37,17 +37,14 @@ export default function exportedRouter() {
     router.put("/e_invite", adminResolver, eInviteController.create);
     router.post(
         "/e_invite",
-        multiAuth([userResolver, adminResolver]),
         eInviteController.getAll,
     );
     router.get(
         "/e_invite/:_id",
-        multiAuth([userResolver, adminResolver]),
         eInviteController.getOne,
     );
     router.get(
         "/e_invite",
-        multiAuth([userResolver, adminResolver]),
         eInviteController.getAllWithoutPagination,
     );
     router.patch("/e_invite/:_id", adminResolver, eInviteController.update);
@@ -87,17 +84,14 @@ export default function exportedRouter() {
     router.put("/gallery", adminResolver, galleryController.create);
     router.post(
         "/gallery",
-        multiAuth([userResolver, adminResolver]),
         galleryController.getAll,
     );
     router.get(
         "/gallery/:_id",
-        multiAuth([userResolver, adminResolver]),
         galleryController.getOne,
     );
     router.get(
         "/gallery",
-        multiAuth([userResolver, adminResolver]),
         galleryController.getAllWithoutPagination,
     );
     router.patch("/gallery/:_id", adminResolver, galleryController.update);
@@ -159,12 +153,10 @@ export default function exportedRouter() {
     router.put("/cms_image", adminResolver, cmsImageController.create);
     router.post(
         "/cms_image",
-        multiAuth([userResolver, adminResolver]),
         cmsImageController.getAll,
     );
     router.post(
         "/get_all_gallery_images",
-        multiAuth([userResolver, adminResolver]),
         cmsImageController.getAllGalleryImages,
     );
     router.get(

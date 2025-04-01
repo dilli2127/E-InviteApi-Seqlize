@@ -264,7 +264,6 @@ export async function logout(req, res) {
                 LogOutOn: getUtcUnix(),
             };
             logJson[`${user?.UserPath}`] = user._id;
-            // createLoginLog(logJson);
             return genericResponse({
                 res,
                 result: null,
@@ -282,7 +281,7 @@ export async function logout(req, res) {
         LogOutOn: getUtcUnix(),
     };
     logJson[`${user?.UserPath}`] = user?._id;
-
+    // createLoginLog(logJson);
     return genericResponse({
         res,
         result: null,
