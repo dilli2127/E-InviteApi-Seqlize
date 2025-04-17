@@ -145,7 +145,7 @@ export default function exportedRouter() {
             dest: "./Attachments/Files",
             // eslint-disable-next-line promise/prefer-await-to-callbacks
         }).any(),
-        checkAllAuth,
+        // checkAllAuth,
         uploadfilecontroller.filterFiles,
         uploadfilecontroller.uploadFiles,
     );
