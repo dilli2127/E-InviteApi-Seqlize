@@ -32,21 +32,24 @@ export default function exportedRouter() {
 
     router.post("/login", LoginAuth.LoginAuth);
     router.post("/signup", UserRegister.RegisterUser);
+    
+    //file
+    router.post(
+        "/upload-photo",
+        multer({
+            dest: "./Attachments/Files",
+            // eslint-disable-next-line promise/prefer-await-to-callbacks
+        }).any(),
+        checkAllAuth,
+        uploadfilecontroller.filterFiles,
+        uploadfilecontroller.uploadFiles,
+    );
 
     // EInvite
     router.put("/e_invite", eInviteController.create);
-    router.post(
-        "/e_invite",
-        eInviteController.getAll,
-    );
-    router.get(
-        "/e_invite/:_id",
-        eInviteController.getOne,
-    );
-    router.get(
-        "/e_invite",
-        eInviteController.getAllWithoutPagination,
-    );
+    router.post("/e_invite", eInviteController.getAll);
+    router.get("/e_invite/:_id", eInviteController.getOne);
+    router.get("/e_invite", eInviteController.getAllWithoutPagination);
     router.patch("/e_invite/:_id", adminResolver, eInviteController.update);
     router.delete("/e_invite/:_id", adminResolver, eInviteController.remove);
     // gallery category
@@ -82,18 +85,9 @@ export default function exportedRouter() {
     );
     // gallery
     router.put("/gallery", adminResolver, galleryController.create);
-    router.post(
-        "/gallery",
-        galleryController.getAll,
-    );
-    router.get(
-        "/gallery/:_id",
-        galleryController.getOne,
-    );
-    router.get(
-        "/gallery",
-        galleryController.getAllWithoutPagination,
-    );
+    router.post("/gallery", galleryController.getAll);
+    router.get("/gallery/:_id", galleryController.getOne);
+    router.get("/gallery", galleryController.getAllWithoutPagination);
     router.patch("/gallery/:_id", adminResolver, galleryController.update);
     router.delete("/gallery/:_id", adminResolver, galleryController.remove);
     // gallery
@@ -136,25 +130,10 @@ export default function exportedRouter() {
     router.get("/user", adminResolver, userController.getAllWithoutPagination);
     router.patch("/user/:_id", adminResolver, userController.update);
     router.delete("/user/:_id", adminResolver, userController.remove);
-    // album uploade pdf to jpge
-    // router.post("/upload-album", upload.single("file"), uploadAlbum);
-    // file upload
-    router.post(
-        "/file-upload",
-        multer({
-            dest: "./Attachments/Files",
-            // eslint-disable-next-line promise/prefer-await-to-callbacks
-        }).any(),
-        // checkAllAuth,
-        uploadfilecontroller.filterFiles,
-        uploadfilecontroller.uploadFiles,
-    );
+
     // cms image
     router.put("/cms_image", adminResolver, cmsImageController.create);
-    router.post(
-        "/cms_image",
-        cmsImageController.getAll,
-    );
+    router.post("/cms_image", cmsImageController.getAll);
     router.post(
         "/get_all_gallery_images",
         cmsImageController.getAllGalleryImages,
@@ -171,17 +150,6 @@ export default function exportedRouter() {
     );
     router.patch("/cms_image/:_id", adminResolver, cmsImageController.update);
     router.delete("/cms_image/:_id", adminResolver, cmsImageController.remove);
-
-    router.post(
-        "/upload-photo",
-        multer({
-            dest: "./Attachments/Files",
-            // eslint-disable-next-line promise/prefer-await-to-callbacks
-        }).any(),
-        checkAllAuth,
-        uploadfilecontroller.filterFiles,
-        uploadfilecontroller.uploadFiles,
-    );
 
     return router;
 }
