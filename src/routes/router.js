@@ -34,7 +34,7 @@ export default function exportedRouter() {
     router.post("/signup", UserRegister.RegisterUser);
 
     // EInvite
-    router.put("/e_invite", adminResolver, eInviteController.create);
+    router.put("/e_invite", eInviteController.create);
     router.post(
         "/e_invite",
         eInviteController.getAll,
@@ -145,7 +145,7 @@ export default function exportedRouter() {
             dest: "./Attachments/Files",
             // eslint-disable-next-line promise/prefer-await-to-callbacks
         }).any(),
-        checkAllAuth,
+        // checkAllAuth,
         uploadfilecontroller.filterFiles,
         uploadfilecontroller.uploadFiles,
     );
@@ -180,7 +180,7 @@ export default function exportedRouter() {
         }).any(),
         checkAllAuth,
         uploadfilecontroller.filterFiles,
-        uploadfilecontroller.uploadFilesaws,
+        uploadfilecontroller.uploadFiles,
     );
 
     return router;

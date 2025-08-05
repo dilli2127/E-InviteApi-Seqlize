@@ -14,10 +14,9 @@ import {
     OTHER_ALLOWED_EXT_UPLOAD,
 } from "../config/constants.js";
 import logger from "../utils/logger.js";
-import {uploadImage, deleteImage, uploadImageCompressed} from "../utils/vultr.js";
 import {getFileExtension} from "../utils/file_upload.js";
 import * as ENV from "../config/environment.js";
-import { AwsuploadImageCompressed } from "../utils/aws.js";
+import { AwsuploadImageCompressed, uploadImage, deleteImage } from "../utils/aws.js";
 
 export function checkIfFileSizeIsUnderLimit(imagePath) {
     try {
@@ -127,78 +126,9 @@ export async function uploadFiles(req, res, next) {
                             statusCode: statusCodes.INVALID_DATA,
                         });
                     const actualFileName = file.filename;
-                    const uploadedFile = await uploadImageCompressed(
-                        `${"files/"}${actualFileName}${fileExtension}`,
-                        `${file.path}`,
-                        next,
-                    );
-                    let finalUrl = uploadedFile.Location;
-                    if (ENV.prod)
-                        finalUrl =
-                            uploadedFile.Location != null &&
-                            uploadedFile.Location.replace("files/", "");
-                    json[`${file.fieldname}`] = finalUrl;
-                    return finalUrl;
-                });
-                await Promise.all(promises);
-            }
-        }
-        return genericResponse({
-            res,
-            result: json,
-            exception: !IsfileExtnsValid ? "Invalid file" : null,
-            pagination: null,
-            statusCode: json ? statusCodes.SUCCESS : statusCodes.SERVER_ERROR,
-        });
-    } catch (error) {
-        return next(error);
-    }
-}
-
-export async function uploadFilesaws(req, res, next) {
-    try {
-        const json = {};
-        let IsfileExtnsValid = true;
-        if (req.files.length) {
-            req.files.forEach(file => {
-                let extensions = file.originalname.split(".");
-                if (extensions?.length > 2) IsfileExtnsValid = false;
-            });
-            if (IsfileExtnsValid) {
-                const promises = req.files.map(async file => {
-                    if (!checkIfFileSizeIsUnderLimit(file.path))
-                        return genericResponse({
-                            res,
-                            result: file.fieldname,
-                            exception: "File too large",
-                            pagination: null,
-                            stringResult: "File too large",
-                            statusCode: statusCodes.INVALID_DATA,
-                        });
-
-                    if (!checkIfFileSizeIsOverMinLimit(file.path))
-                        return genericResponse({
-                            res,
-                            result: file.fieldname,
-                            exception: "File too small",
-                            pagination: null,
-                            stringResult: "File too small",
-                            statusCode: statusCodes.INVALID_DATA,
-                        });
-                    const fileExtension = path.extname(file.originalname);
-                    if (!fileExtension)
-                        return genericResponse({
-                            res,
-                            result: json,
-                            exception: null,
-                            pagination: null,
-                            statusCode: statusCodes.INVALID_DATA,
-                        });
-                    const actualFileName = file.filename;
                     const uploadedFile = await AwsuploadImageCompressed(
                         `${"files/"}${actualFileName}${fileExtension}`,
                         `${file.path}`,
-                        next,
                     );
                     let finalUrl = uploadedFile.Location;
                     if (ENV.prod)
@@ -222,6 +152,8 @@ export async function uploadFilesaws(req, res, next) {
         return next(error);
     }
 }
+
+
 
 export async function deleteFiles(req, res, next) {
     try {
