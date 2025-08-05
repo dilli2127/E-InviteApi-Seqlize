@@ -119,12 +119,12 @@ export async function adminResolver(req, res, next) {
 
     if (user) {
         const opts = {
-            attributes: {include: ["PasswordValidFrom", "MobileNumber"]},
+            attributes: {include: ["mobile"]},
         };
 
         const item = await genericGetOne({
             Table: Users,
-            condition: {_id: user._id},
+            condition: {_id: user.userId },
             opts,
         });
         if (item) {
