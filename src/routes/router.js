@@ -40,7 +40,7 @@ export default function exportedRouter() {
             dest: "./Attachments/Files",
             // eslint-disable-next-line promise/prefer-await-to-callbacks
         }).any(),
-        checkAllAuth,
+        // checkAllAuth,
         uploadfilecontroller.filterFiles,
         uploadfilecontroller.uploadFiles,
     );
@@ -50,8 +50,8 @@ export default function exportedRouter() {
     router.post("/e_invite", eInviteController.getAll);
     router.get("/e_invite/:_id", eInviteController.getOne);
     router.get("/e_invite", eInviteController.getAllWithoutPagination);
-    router.patch("/e_invite/:_id", adminResolver, eInviteController.update);
-    router.delete("/e_invite/:_id", adminResolver, eInviteController.remove);
+    router.patch("/e_invite/:_id",  eInviteController.update);
+    router.delete("/e_invite/:_id",eInviteController.remove);
     // gallery category
     router.put(
         "/gallery_category",

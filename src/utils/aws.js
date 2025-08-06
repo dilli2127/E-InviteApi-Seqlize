@@ -1,9 +1,7 @@
 import fs from "fs/promises";
 import { S3Client, PutObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";
 import sharp from "sharp";
-import path from "path";
-import { fileURLToPath } from "url";
-import mime from "mime-types"; // Import MIME type detector
+import mime from "mime-types";
 import logger from "./logger.js";
 import {
     awsAccessKey,
@@ -11,9 +9,6 @@ import {
     awsRegion,
     awsBucketName,
 } from "../config/environment.js";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 // Initialize AWS S3 client
 const s3 = new S3Client({
@@ -28,73 +23,129 @@ const s3 = new S3Client({
  * Upload a compressed image to AWS S3 bucket
  * @param {string} key - Unique key for the image
  * @param {string} filePath - Local file path
- * @returns {Promise<{Location: string}>} - URL of the uploaded image
+ * @param {Object} [options] - Compression options
+ * @param {number} [options.quality=90] - WebP quality (1-100)
+ * @param {number} [options.maxWidth] - Maximum width for resizing
+ * @param {number} [options.maxHeight] - Maximum height for resizing
+ * @returns {Promise<{Location: string, size: number}>} - URL and size of the uploaded image
  */
-export async function AwsuploadImageCompressed(key, filePath) {
-    try {
-        let fileStat;
-        try {
-            fileStat = await fs.stat(filePath);
-        } catch (error) {
-            throw new Error(`File not found: ${filePath}`);
-        }
+export async function AwsuploadImageCompressed(key, filePath, options = {}) {
+    // Input validation
+    if (!key || typeof key !== 'string') {
+        throw new Error('Invalid key: must be a non-empty string');
+    }
+    if (!filePath || typeof filePath !== 'string') {
+        throw new Error('Invalid filePath: must be a non-empty string');
+    }
 
+    const { quality = 90, maxWidth, maxHeight } = options;
+
+    try {
+        // Check if file exists and is valid
+        const fileStat = await fs.stat(filePath);
         if (!fileStat.isFile()) {
             throw new Error(`Invalid file path: ${filePath}`);
         }
 
-        // Compress the image using sharp
-        const compressedBuffer = await sharp(filePath)
-            .resize(1200)
-            .jpeg({ quality: 90 })
+        // Build sharp processing chain
+        let sharpProcessor = sharp(filePath);
+        
+        // Apply resizing if specified
+        if (maxWidth || maxHeight) {
+            sharpProcessor = sharpProcessor.resize(maxWidth, maxHeight, {
+                fit: 'inside',
+                withoutEnlargement: true
+            });
+        }
+        
+        // Apply WebP compression
+        const compressedBuffer = await sharpProcessor
+            .webp({ quality: Math.max(1, Math.min(100, quality)) })
             .toBuffer();
 
-        if (!compressedBuffer || compressedBuffer.length === 0) {
-            throw new Error("Error: Compressed buffer is empty!");
+        if (!compressedBuffer?.length) {
+            throw new Error('Failed to compress image: empty buffer');
         }
 
-        // Upload the image to S3
-        await s3.send(new PutObjectCommand({
+        // Upload to S3
+        const command = new PutObjectCommand({
             Bucket: awsBucketName,
             Key: key,
             Body: compressedBuffer,
-            ContentType: "image/jpeg",
-        }));
+            ContentType: 'image/webp',
+            CacheControl: 'max-age=31536000', // 1 year cache
+        });
 
-        return { Location: constructUrl(key) };
+        await s3.send(command);
+        
+        logger(`Image uploaded successfully: ${key} (${compressedBuffer.length} bytes)`);
+        return { 
+            Location: constructUrl(key),
+            size: compressedBuffer.length
+        };
     } catch (err) {
-        logger("Error uploading image: ", err);
-        throw err;
+        logger(`Error uploading compressed image ${key}:`, err.message);
+        throw new Error(`Upload failed: ${err.message}`);
     }
 }
 
 /**
- * Upload an image to AWS S3 bucket
+ * Upload an image to AWS S3 bucket (original format)
  * @param {string} key - Unique key for the image
  * @param {string} filePath - Local file path
- * @returns {Promise<{Location: string}>} - URL of the uploaded image
+ * @param {boolean} [deleteLocal=true] - Whether to delete local file after upload
+ * @returns {Promise<{Location: string, size: number, contentType: string}>} - Upload result
  */
-export async function uploadImage(key, filePath) {
-    try {
-        const fileData = await fs.readFile(filePath);
-        const contentType = mime.lookup(filePath) || "application/octet-stream";
+export async function uploadImage(key, filePath, deleteLocal = true) {
+    // Input validation
+    if (!key || typeof key !== 'string') {
+        throw new Error('Invalid key: must be a non-empty string');
+    }
+    if (!filePath || typeof filePath !== 'string') {
+        throw new Error('Invalid filePath: must be a non-empty string');
+    }
 
-        // Upload file to S3
-        await s3.send(new PutObjectCommand({
+    try {
+        // Check file exists before reading
+        const fileStat = await fs.stat(filePath);
+        if (!fileStat.isFile()) {
+            throw new Error(`Invalid file path: ${filePath}`);
+        }
+
+        const [fileData, contentType] = await Promise.all([
+            fs.readFile(filePath),
+            Promise.resolve(mime.lookup(filePath) || 'application/octet-stream')
+        ]);
+
+        // Upload to S3
+        const command = new PutObjectCommand({
             Bucket: awsBucketName,
             Key: key,
             Body: fileData,
             ContentType: contentType,
-        }));
+            CacheControl: 'max-age=31536000', // 1 year cache
+        });
 
-        // Delete local file after successful upload
-        await fs.unlink(filePath);
+        await s3.send(command);
 
-        const url = constructUrl(key);
-        return { Location: url };
+        // Delete local file if requested
+        if (deleteLocal) {
+            try {
+                await fs.unlink(filePath);
+            } catch (unlinkErr) {
+                logger(`Warning: Could not delete local file ${filePath}:`, unlinkErr.message);
+            }
+        }
+
+        logger(`Image uploaded successfully: ${key} (${fileData.length} bytes)`);
+        return { 
+            Location: constructUrl(key),
+            size: fileData.length,
+            contentType
+        };
     } catch (err) {
-        logger("Error uploading image: ", err);
-        throw err;
+        logger(`Error uploading image ${key}:`, err.message);
+        throw new Error(`Upload failed: ${err.message}`);
     }
 }
 
@@ -104,16 +155,23 @@ export async function uploadImage(key, filePath) {
  * @returns {Promise<boolean>} - Success status
  */
 export async function deleteImage(key) {
+    // Input validation
+    if (!key || typeof key !== 'string') {
+        throw new Error('Invalid key: must be a non-empty string');
+    }
+
     try {
-        await s3.send(new DeleteObjectCommand({
+        const command = new DeleteObjectCommand({
             Bucket: awsBucketName,
             Key: key,
-        }));
-        logger("Image deleted successfully");
+        });
+        
+        await s3.send(command);
+        logger(`Image deleted successfully: ${key}`);
         return true;
     } catch (err) {
-        logger("Error deleting image: ", err);
-        throw err;
+        logger(`Error deleting image ${key}:`, err.message);
+        throw new Error(`Delete failed: ${err.message}`);
     }
 }
 
@@ -123,5 +181,41 @@ export async function deleteImage(key) {
  * @returns {string} - Publicly accessible URL
  */
 function constructUrl(key) {
-    return `https://${awsBucketName}.s3.${awsRegion}.amazonaws.com/${key}`;
+    if (!key) {
+        throw new Error('Invalid key: cannot construct URL for empty key');
+    }
+    return `https://${awsBucketName}.s3.${awsRegion}.amazonaws.com/${encodeURIComponent(key)}`;
+}
+
+/**
+ * Batch delete multiple images from AWS S3 bucket
+ * @param {string[]} keys - Array of unique keys for the images
+ * @returns {Promise<{deleted: string[], failed: Array<{key: string, error: string}>}>} - Batch delete result
+ */
+export async function batchDeleteImages(keys) {
+    if (!Array.isArray(keys) || keys.length === 0) {
+        throw new Error('Invalid keys: must be a non-empty array');
+    }
+
+    const deleted = [];
+    const failed = [];
+
+    // Process deletions in parallel with concurrency limit
+    const concurrency = 10;
+    for (let i = 0; i < keys.length; i += concurrency) {
+        const batch = keys.slice(i, i + concurrency);
+        const promises = batch.map(async (key) => {
+            try {
+                await deleteImage(key);
+                deleted.push(key);
+            } catch (err) {
+                failed.push({ key, error: err.message });
+            }
+        });
+        
+        await Promise.allSettled(promises);
+    }
+
+    logger(`Batch delete completed: ${deleted.length} deleted, ${failed.length} failed`);
+    return { deleted, failed };
 }
