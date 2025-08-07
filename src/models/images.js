@@ -85,5 +85,4 @@ export const userFields = [
     "url",
     "type",
     "gallery_id",
-    "gallery_category",
 ];

@@ -15,7 +15,7 @@ import Images, {userFields} from "../models/images.js";
 import sortConditionBuilder from "../utils/sort_condition_builder.js";
 import {Op} from "sequelize";
 
-const populateQueryGalleryCategory = ["GalleryCategoryItem"];
+const populateQueryGalleryCategory = ["GallerItem"];
 export async function create(req, res, next) {
     try {
         const json = req.body;
@@ -168,7 +168,7 @@ export async function getAllGalleryImages(req, res, next) {
         );
         const getResult = await genericGetAll({
             Table: Images,
-            condition: {gallery_category: {[Op.ne]: null}},
+            condition: {gallery_id: {[Op.ne]: null}},
             sortConditions,
             next,
             populateQuery: populateQueryGalleryCategory,
