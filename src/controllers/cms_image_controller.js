@@ -168,7 +168,11 @@ export async function getAllGalleryImages(req, res, next) {
         );
         const getResult = await genericGetAll({
             Table: Images,
-            condition: {gallery_id: {[Op.ne]: null}},
+            condition: {
+                gallery_id: json?.gallery_id
+                    ? json?.gallery_id
+                    : {[Op.ne]: null},
+            },
             sortConditions,
             next,
             populateQuery: populateQueryGalleryCategory,

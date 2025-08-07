@@ -133,7 +133,7 @@ export default function exportedRouter() {
 
     // cms image
     router.put("/cms_image", adminResolver, cmsImageController.create);
-    router.post("/cms_image",checkAllAuth, cmsImageController.getAll);
+    router.post("/cms_image", cmsImageController.getAll);
     router.post(
         "/get_all_gallery_images",
         cmsImageController.getAllGalleryImages,
