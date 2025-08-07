@@ -105,7 +105,7 @@ export async function getAll(req, res, next) {
             defaultSortConditions,
         );
         let condition = {};
-        if (res?.locals?.UserID) {
+        if (res?.locals?.UserID && res?.locals?.usertype !== "admin") {
             condition["userid"] = res?.locals?.UserID;
         }
         const getResult = await genericGetAll({

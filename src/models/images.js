@@ -2,6 +2,7 @@
 import {DataTypes, Model, NOW, Sequelize} from "sequelize";
 import {sequelize} from "../config/db.js"; 
 import GalleryCategory from "./gallery_category.js";
+import Gallery from "./gallery.js";
 
 export default class Images extends Model {}
 
@@ -25,6 +26,16 @@ Images.init(
             allowNull: true,
             references: {
                 model: "gallery_category_table",
+                key: "_id",
+            },
+            onUpdate: "CASCADE",
+            onDelete: "SET NULL",
+        },
+        gallery_id: {
+            type: Sequelize.UUID,
+            allowNull: true,
+            references: {
+                model: "gallery",
                 key: "_id",
             },
             onUpdate: "CASCADE",
@@ -64,8 +75,15 @@ Images.hasOne(GalleryCategory, {
     sourceKey: "gallery_category",
     foreignKey: "_id",
 });
+Images.hasOne(Gallery, {
+    as: "GallerItem",
+    sourceKey: "gallery_id",
+    foreignKey: "_id",
+});
+
 export const userFields = [
     "url",
     "type",
+    "gallery_id",
     "gallery_category",
 ];

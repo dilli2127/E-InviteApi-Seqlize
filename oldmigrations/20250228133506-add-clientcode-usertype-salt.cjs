@@ -1,0 +1,26 @@
+"use strict";
+
+module.exports = {
+    up: async (queryInterface, Sequelize) => {
+        await queryInterface.addColumn("Users", "clientcode", {
+            type: Sequelize.STRING,
+            allowNull: true, // Optional (adjust based on your requirement)
+        });
+
+        await queryInterface.addColumn("Users", "usertype", {
+            type: DataTypes.ENUM("user", "admin"),
+            allowNull: false,
+        });
+
+        await queryInterface.addColumn("Users", "salt", {
+            type: Sequelize.STRING,
+            allowNull: false, // Salt is required for password hashing
+        });
+    },
+
+    down: async (queryInterface, Sequelize) => {
+        await queryInterface.removeColumn("Users", "clientcode");
+        await queryInterface.removeColumn("Users", "usertype");
+        await queryInterface.removeColumn("Users", "salt");
+    },
+};
