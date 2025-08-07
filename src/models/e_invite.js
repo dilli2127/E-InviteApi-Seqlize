@@ -19,7 +19,7 @@ EInvite.init(
             allowNull: false,
         },
         mobile_number: {
-            type: DataTypes.INTEGER,
+            type: DataTypes.STRING,
             allowNull: false,
         },
         email: {
