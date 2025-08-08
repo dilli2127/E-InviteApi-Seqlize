@@ -68,15 +68,15 @@ export const OTHER_ALLOWED_EXT_UPLOAD = ["jpg", "jpeg", "png","JPG", "JPEG", "PN
 export const ALLOWED_DOMAINS = [
     /^(https:\/\/|http:\/\/)(www\.){0,1}localhost$/,
     /^(https:\/\/|http:\/\/)(www\.){0,1}tnpcb\.gov\.in$/,
-    /^(https:\/\/|http:\/\/)(www\.){0,1}[0-9a-z_-]+\.vertace\.net$/,
-    /^(https:\/\/|http:\/\/)(www\.){0,1}[0-9a-z_-]+\.vertace\.org$/,
-    /^(https:\/\/|http:\/\/)(www\.){0,1}[0-9a-z_-]+\.vertace\.com$/,
+    /^(https:\/\/|http:\/\/)(www\.){0,1}[0-9a-z_-]+\.freshfocuzstudio\.net$/,
+    /^(https:\/\/|http:\/\/)(www\.){0,1}[0-9a-z_-]+\.freshfocuzstudio\.org$/,
+    /^(https:\/\/|http:\/\/)(www\.){0,1}[0-9a-z_-]+\.freshfocuzstudio\.com$/,
 ];
 export const MASTER_ALLOWED_DOMAINS = [
     /^(https:\/\/|http:\/\/)(www\.){0,1}tnpcb\.gov\.in$/,
-    /^(https:\/\/|http:\/\/)(www\.){0,1}(pcb-ocm)\.vertace\.net$/,
-    /^(https:\/\/|http:\/\/)(www\.){0,1}(pcb-ocm)\.vertace\.org$/,
-    /^(https:\/\/|http:\/\/)(www\.){0,1}(pcb-ocm)\.vertace\.com$/,
+    /^(https:\/\/|http:\/\/)(www\.){0,1}(pcb-ocm)\.freshfocuzstudio\.net$/,
+    /^(https:\/\/|http:\/\/)(www\.){0,1}(pcb-ocm)\.freshfocuzstudio\.org$/,
+    /^(https:\/\/|http:\/\/)(www\.){0,1}(pcb-ocm)\.freshfocuzstudio\.com$/,
 ];
 export const DEFAULT_DOMAIN = "*.dilli.org";
 
