@@ -46,12 +46,12 @@ export default function exportedRouter() {
     );
 
     // EInvite
-    router.put("/e_invite", eInviteController.create);
+    router.put("/e_invite", adminResolver,eInviteController.create);
     router.post("/e_invite", eInviteController.getAll);
     router.get("/e_invite/:_id", eInviteController.getOne);
     router.get("/e_invite", eInviteController.getAllWithoutPagination);
-    router.patch("/e_invite/:_id",  eInviteController.update);
-    router.delete("/e_invite/:_id",eInviteController.remove);
+    router.patch("/e_invite/:_id", adminResolver, eInviteController.update);
+    router.delete("/e_invite/:_id", adminResolver, eInviteController.remove);
     // gallery category
     router.put(
         "/gallery_category",
